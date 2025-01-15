@@ -12,6 +12,7 @@ const HomePage = async () => {
           <p>id: {user.id}</p>
           <p>Name: {user.name}</p>
           <p>email: {user.email}</p>
+          <p>role: {user.role}</p>
         </div>
       )}
       {!isAuth && <div>You are not logged in</div>}

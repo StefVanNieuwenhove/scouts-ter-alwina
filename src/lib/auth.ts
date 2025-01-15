@@ -2,9 +2,10 @@ import 'server-only';
 
 import { env } from '@/env';
 import { SessionPayload, VerifySession } from './types';
-import { SignJWT, jwtVerify } from 'jose';
+import { JWTPayload, SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
+import { Role } from '@prisma/client';
 
 const TOKEN_NAME = env.TOKEN_NAME;
 const SESSION_SECRET = new TextEncoder().encode(env.SESSION_SECRET);
@@ -19,7 +20,9 @@ export const encrypt = (payload: SessionPayload, expire: Date) => {
     .sign(SESSION_SECRET);
 };
 
-export const decrypt = async (token: string | undefined = '') => {
+export const decrypt = async (
+  token: string | undefined = ''
+): Promise<JWTPayload | null> => {
   try {
     // token regex
     const tokenRegex = /^[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+$/;
@@ -91,3 +94,25 @@ export const getSession = cache(async (): Promise<VerifySession> => {
     isAuth: payload ? true : false,
   };
 });
+
+export const hasAcces = async (role: Role[], route: string) => {
+  const routesByUser = {
+    ADMIN: ['/admin', '/admin/users'],
+    RVB: ['/rvb', '/profile'],
+    KAPOENENLEIDING: ['/camps', '/camps/create'],
+    WOUTERLEIDING: ['/camps', '/camps/create'],
+    JONGGIVERLEIDING: ['/camps', '/camps/create'],
+    GIVERLEIDING: ['/camps', '/camps/create'],
+    JINLEIDING: ['/camps', '/camps/create'],
+    GROEPSLEIDING: ['/camps', '/camps/create'],
+    PARENT: ['/camps', '/camps/create'],
+    KAPOEN: ['/camps', '/camps/create'],
+    WOUTER: ['/camps', '/camps/create'],
+    JONGGIVER: ['/camps', '/camps/create'],
+    GIVER: ['/camps', '/camps/create'],
+    JIN: ['/camps', '/camps/create'],
+    UNKNOWN: ['/camps', '/camps/create'],
+  };
+
+  const user = await getSession();
+};

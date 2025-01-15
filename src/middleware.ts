@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { decrypt } from './lib/auth';
+import { decrypt, hasAcces } from './lib/auth';
 import { env } from './env';
+import { UserSession } from './lib/types';
+import { Role } from '@prisma/client';
 
 const TOKEN_NAME = env.TOKEN_NAME;
 
 // 1. Specify protected and public routes
-const protectedRoutes = ['/dashboard'];
-const publicRoutes = ['/sign-in', '/sign-up', '/'];
+const protectedRoutes = ['/rvb', '/profile'];
+const publicRoutes = ['/', '/sign-in', '/sign-up', '/forgot-password'];
 
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
@@ -18,19 +20,15 @@ export default async function middleware(req: NextRequest) {
   // 3. Decrypt the session from the cookie
   const cookie = (await cookies()).get(TOKEN_NAME)?.value;
   const session = await decrypt(cookie);
+  const user: UserSession = session?.user as UserSession;
 
   // 4. Redirect to /login if the user is not authenticated
-  if (isProtectedRoute && !session) {
+  if (isProtectedRoute && !user) {
     return NextResponse.redirect(new URL('/sign-in', req.nextUrl));
   }
 
-  // 5. Redirect to /dashboard if the user is authenticated
-  if (
-    isPublicRoute &&
-    session &&
-    !req.nextUrl.pathname.startsWith('/dashboard')
-  ) {
-    //return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
+  if (isProtectedRoute && user && !hasAcces(user.role as Role, path)) {
+    return NextResponse.redirect(new URL('/403', req.nextUrl));
   }
 
   return NextResponse.next();

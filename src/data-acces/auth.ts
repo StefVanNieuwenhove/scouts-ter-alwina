@@ -52,6 +52,7 @@ export const register = async ({
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -76,7 +77,7 @@ export const login = async ({
     });
 
     if (!user) {
-      return { message: 'User does not exist', type: 'error' };
+      return { message: 'User does not exist. Please register', type: 'error' };
     }
 
     // 2. Hash the password and create the user
@@ -92,6 +93,7 @@ export const login = async ({
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -144,6 +146,7 @@ export const forgotPassword = async ({
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

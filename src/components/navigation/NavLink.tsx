@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, ButtonProps } from '../ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -20,7 +19,7 @@ const NavLink = ({
     <Button
       asChild
       variant={variant}
-      className={cn(className, 'hover:underline')}>
+      className={cn(className, 'hover:underline ')}>
       <Link href={href}>{name}</Link>
     </Button>
   );
